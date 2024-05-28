@@ -1,6 +1,7 @@
 ﻿using EnergySmartBridge.MQTT;
 using EnergySmartBridge.WebService;
 using log4net;
+using Microsoft.AspNetCore.Http;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Connecting;
@@ -29,7 +30,6 @@ namespace EnergySmartBridge.Modules
 
         public static DeviceRegistry MqttDeviceRegistry { get; set; }
 
-        private WebServerModule WebServer { get; set; }
         private IManagedMqttClient MqttClient { get; set; }
 
         private readonly Regex regexTopic = new Regex(Global.mqtt_prefix + "/([A-F0-9]+)/(.*)", RegexOptions.Compiled);
@@ -38,12 +38,6 @@ namespace EnergySmartBridge.Modules
 
         private readonly AutoResetEvent trigger = new AutoResetEvent(false);
 
-        public MQTTModule(WebServerModule webServer)
-        {
-            WebServer = webServer;
-            // Energy Smart module posts to this URL
-            WebServer.RegisterPrefix(ProcessRequest, new string[] { "/~branecky/postAll.php" } );
-        }
 
         public void Startup()
         {
@@ -182,13 +176,14 @@ namespace EnergySmartBridge.Modules
             trigger.Set();
         }
 
-        private object ProcessRequest(HttpListenerRequest request)
+        public object ProcessRequest(HttpRequest request)
         {
-            string content = new System.IO.StreamReader(request.InputStream).ReadToEnd();
+            var query = request.Query;
+            var deviceText = query["DeviceText"];
 
-            log.Debug($"URL: {request.RawUrl}\n{content}");
-
-            WaterHeaterInput waterHeater = HttpUtility.ParseQueryString(content).ToObject<WaterHeaterInput>();
+            Console.WriteLine(request.QueryString);
+            /*
+            WaterHeaterInput waterHeater = request.Query.ToObject<WaterHeaterInput>();
 
             if(!connectedModules.ContainsKey(waterHeater.DeviceText))
             {
@@ -209,6 +204,9 @@ namespace EnergySmartBridge.Modules
             {
                 return new WaterHeaterOutput() { };
             }
+            */
+
+            return new WaterHeaterOutput() { };
         }
 
         private void PublishWaterHeater(WaterHeaterInput waterHeater)
