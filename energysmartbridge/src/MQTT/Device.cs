@@ -12,5 +12,5 @@ internal class Device
     public string unique_id { get; set; }
 
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    public DeviceRegistry device { get; set; } = MQTTModule.MqttDeviceRegistry;
+    public required DeviceRegistry device { get; init; }
 }

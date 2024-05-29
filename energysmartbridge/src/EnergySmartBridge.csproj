@@ -4,11 +4,10 @@
     <Nullable>enable</Nullable>
     <InvariantGlobalization>true</InvariantGlobalization>
     <IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>
-    <PublishReadyToRun>true</PublishReadyToRun>
     <OutputType>exe</OutputType>
+    <DebugType>none</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="log4net" Version="2.0.17" />
     <PackageReference Include="MQTTnet" Version="3.1.2" />
     <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="3.1.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
