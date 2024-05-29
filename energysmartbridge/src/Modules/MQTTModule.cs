@@ -28,16 +28,16 @@ using System.Threading.Tasks;
 
         private IManagedMqttClient MqttClient { get; set; }
 
-        private readonly Regex regexTopic = new Regex(Global.mqtt_prefix + "/([A-F0-9]+)/(.*)", RegexOptions.Compiled);
+        private readonly Regex regexTopic = new(Global.mqtt_prefix + "/([A-F0-9]+)/(.*)", RegexOptions.Compiled);
 
-        private readonly ConcurrentDictionary<string, Queue<WaterHeaterOutput>> connectedModules = new ConcurrentDictionary<string, Queue<WaterHeaterOutput>>();
+        private readonly ConcurrentDictionary<string, Queue<WaterHeaterOutput>> connectedModules = new();
 
-        private readonly AutoResetEvent trigger = new AutoResetEvent(false);
+        private readonly AutoResetEvent trigger = new(false);
 
 
         public void Startup()
         {
-            MqttApplicationMessage lastwill = new MqttApplicationMessage()
+            MqttApplicationMessage lastwill = new()
             {
                 Topic = $"{Global.mqtt_prefix}/status",
                 Payload = Encoding.UTF8.GetBytes("offline"),
@@ -86,7 +86,7 @@ using System.Threading.Tasks;
             MqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(OnAppMessage);
 
             // Subscribe to notifications for these command topics
-            List<Topic> toSubscribe = new List<Topic>()
+            List<Topic> toSubscribe = new()
             {
                 Topic.updaterate_command,
                 Topic.mode_command,
