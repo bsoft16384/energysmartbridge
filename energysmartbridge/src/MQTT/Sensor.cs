@@ -1,9 +1,9 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 internal partial class Sensor : Device {
-  [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
   public DeviceClass? device_class { get; set; }
 
-  [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-  public string unit_of_measurement { get; set; }
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+  public string? unit_of_measurement { get; set; }
 }

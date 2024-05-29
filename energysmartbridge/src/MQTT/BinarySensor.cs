@@ -1,13 +1,6 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using System.Text.Json.Serialization;
 
 internal class BinarySensor : Device {
-  [JsonConverter(typeof(StringEnumConverter))]
-  public enum DeviceClass {
-    heat,
-    problem,
-  }
-
-  [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public DeviceClass? device_class { get; set; }
 }

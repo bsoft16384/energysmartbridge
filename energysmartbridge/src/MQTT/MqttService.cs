@@ -1,4 +1,3 @@
-using EnergySmartBridge.WebService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -10,13 +9,14 @@ using MQTTnet.Client.Options;
 using MQTTnet.Client.Receiving;
 using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Protocol;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -169,7 +169,7 @@ internal class MqttService : IHostedService {
           await _mqttClient.StopAsync();
       }
 
-      public object ProcessRequest([AsParameters] WaterHeaterInput waterHeater)
+      public WaterHeaterOutput ProcessRequest([AsParameters] WaterHeaterInput waterHeater)
       {
           Console.WriteLine(waterHeater);
   
@@ -197,64 +197,64 @@ internal class MqttService : IHostedService {
       private void PublishWaterHeater(WaterHeaterInput waterHeater)
       {
           PublishAsync($"{Global.mqtt_discovery_prefix}/water_heater/{waterHeater.DeviceText}/config",
-              JsonConvert.SerializeObject(waterHeater.ToThermostatConfig(_deviceRegistry)));
+              Serialize(waterHeater.ToThermostatConfig(_deviceRegistry)));
 
           PublishAsync($"{Global.mqtt_discovery_prefix}/binary_sensor/{waterHeater.DeviceText}/heating/config",
-              JsonConvert.SerializeObject(waterHeater.ToInHeatingConfig(_deviceRegistry)));
+              Serialize(waterHeater.ToInHeatingConfig(_deviceRegistry)));
           
           PublishAsync($"{Global.mqtt_discovery_prefix}/binary_sensor/{waterHeater.DeviceText}/grid/config",
-              JsonConvert.SerializeObject(waterHeater.ToGridConfig(_deviceRegistry)));
+              Serialize(waterHeater.ToGridConfig(_deviceRegistry)));
 
           PublishAsync($"{Global.mqtt_discovery_prefix}/binary_sensor/{waterHeater.DeviceText}/airfilterstatus/config",
-              JsonConvert.SerializeObject(waterHeater.ToAirFilterStatusConfig(_deviceRegistry)));
+              Serialize(waterHeater.ToAirFilterStatusConfig(_deviceRegistry)));
 
           PublishAsync($"{Global.mqtt_discovery_prefix}/binary_sensor/{waterHeater.DeviceText}/condensepumpfail/config",
-              JsonConvert.SerializeObject(waterHeater.ToCondensePumpFailConfig(_deviceRegistry)));
+              Serialize(waterHeater.ToCondensePumpFailConfig(_deviceRegistry)));
 
           PublishAsync($"{Global.mqtt_discovery_prefix}/binary_sensor/{waterHeater.DeviceText}/leakdetect/config",
-              JsonConvert.SerializeObject(waterHeater.ToLeakDetectConfig(_deviceRegistry)));
+              Serialize(waterHeater.ToLeakDetectConfig(_deviceRegistry)));
 
           PublishAsync($"{Global.mqtt_discovery_prefix}/binary_sensor/{waterHeater.DeviceText}/ecoerror/config",
-              JsonConvert.SerializeObject(waterHeater.ToEcoErrorConfig(_deviceRegistry)));
+              Serialize(waterHeater.ToEcoErrorConfig(_deviceRegistry)));
 
           PublishAsync($"{Global.mqtt_discovery_prefix}/sensor/{waterHeater.DeviceText}/rawmode/config",
-              JsonConvert.SerializeObject(waterHeater.ToRawModeConfig(_deviceRegistry)));
+              Serialize(waterHeater.ToRawModeConfig(_deviceRegistry)));
 
           PublishAsync($"{Global.mqtt_discovery_prefix}/sensor/{waterHeater.DeviceText}/hotwatervol/config",
-              JsonConvert.SerializeObject(waterHeater.ToHotWaterVolConfig(_deviceRegistry)));
+              Serialize(waterHeater.ToHotWaterVolConfig(_deviceRegistry)));
 
           PublishAsync($"{Global.mqtt_discovery_prefix}/sensor/{waterHeater.DeviceText}/uppertemp/config",
-              JsonConvert.SerializeObject(waterHeater.ToUpperTempConfig(_deviceRegistry)));
+              Serialize(waterHeater.ToUpperTempConfig(_deviceRegistry)));
 
           PublishAsync($"{Global.mqtt_discovery_prefix}/sensor/{waterHeater.DeviceText}/lowertemp/config",
-              JsonConvert.SerializeObject(waterHeater.ToLowerTempConfig(_deviceRegistry)));
+              Serialize(waterHeater.ToLowerTempConfig(_deviceRegistry)));
 
           PublishAsync($"{Global.mqtt_discovery_prefix}/sensor/{waterHeater.DeviceText}/dryfire/config",
-              JsonConvert.SerializeObject(waterHeater.ToDryFireConfig(_deviceRegistry)));
+              Serialize(waterHeater.ToDryFireConfig(_deviceRegistry)));
 
           PublishAsync($"{Global.mqtt_discovery_prefix}/sensor/{waterHeater.DeviceText}/elementfail/config",
-              JsonConvert.SerializeObject(waterHeater.ToElementFailConfig(_deviceRegistry)));
+              Serialize(waterHeater.ToElementFailConfig(_deviceRegistry)));
 
           PublishAsync($"{Global.mqtt_discovery_prefix}/sensor/{waterHeater.DeviceText}/tanksensorfail/config",
-              JsonConvert.SerializeObject(waterHeater.ToTankSensorFailConfig(_deviceRegistry)));
+              Serialize(waterHeater.ToTankSensorFailConfig(_deviceRegistry)));
 
           PublishAsync($"{Global.mqtt_discovery_prefix}/sensor/{waterHeater.DeviceText}/leak/config",
-              JsonConvert.SerializeObject(waterHeater.ToLeakConfig(_deviceRegistry)));
+              Serialize(waterHeater.ToLeakConfig(_deviceRegistry)));
 
           PublishAsync($"{Global.mqtt_discovery_prefix}/sensor/{waterHeater.DeviceText}/masterdispfail/config",
-              JsonConvert.SerializeObject(waterHeater.ToMasterDispFailConfig(_deviceRegistry)));
+              Serialize(waterHeater.ToMasterDispFailConfig(_deviceRegistry)));
 
           PublishAsync($"{Global.mqtt_discovery_prefix}/sensor/{waterHeater.DeviceText}/compsensorfail/config",
-              JsonConvert.SerializeObject(waterHeater.ToCompSensorFailConfig(_deviceRegistry)));
+              Serialize(waterHeater.ToCompSensorFailConfig(_deviceRegistry)));
 
           PublishAsync($"{Global.mqtt_discovery_prefix}/sensor/{waterHeater.DeviceText}/syssensorfail/config",
-              JsonConvert.SerializeObject(waterHeater.ToSysSensorFailConfig(_deviceRegistry)));
+              Serialize(waterHeater.ToSysSensorFailConfig(_deviceRegistry)));
 
           PublishAsync($"{Global.mqtt_discovery_prefix}/sensor/{waterHeater.DeviceText}/systemfail/config",
-              JsonConvert.SerializeObject(waterHeater.ToSystemFailConfig(_deviceRegistry)));
+              Serialize(waterHeater.ToSystemFailConfig(_deviceRegistry)));
 
           PublishAsync($"{Global.mqtt_discovery_prefix}/sensor/{waterHeater.DeviceText}/faultcodes/config",
-              JsonConvert.SerializeObject(waterHeater.ToFaultCodesConfig(_deviceRegistry)));
+              Serialize(waterHeater.ToFaultCodesConfig(_deviceRegistry)));
       }
 
       private void PublishWaterHeaterState(WaterHeaterInput waterHeater)
@@ -315,4 +315,16 @@ internal class MqttService : IHostedService {
       {
           return _mqttClient.PublishAsync(topic, payload, MqttQualityOfServiceLevel.AtMostOnce, true);
       }
+
+  private static string Serialize<T>(T value) {
+    return JsonSerializer.Serialize<T>(value, SerializerOptions());
+  }
+
+  private static JsonSerializerOptions SerializerOptions() {
+    var options = new JsonSerializerOptions() {
+      PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+    };
+    options.Converters.Add(new JsonStringEnumConverter<DeviceClass>());
+    return options;
+  }
 }

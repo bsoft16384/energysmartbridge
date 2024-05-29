@@ -25,7 +25,7 @@ internal class Program {
     app.Run();
   }
 
-  internal static object ProcessRequest(
+  internal static WaterHeaterOutput ProcessRequest(
       [AsParameters] WaterHeaterInput waterHeater, MqttService mqttService) =>
     mqttService.ProcessRequest(waterHeater);
 }

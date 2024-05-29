@@ -1,18 +1,14 @@
-﻿using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
-namespace EnergySmartBridge.WebService
-{
-    public class WaterHeaterOutput
-    {
-        public string Success { get; set; } = "0";
+internal class WaterHeaterOutput {
+  public string Success { get; init; } = "0";
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string UpdateRate { get; set; }
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+  public string? UpdateRate { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string Mode { get; set; }
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+  public string? Mode { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string SetPoint { get; set; }
-    }
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+  public string? SetPoint { get; set; }
 }
