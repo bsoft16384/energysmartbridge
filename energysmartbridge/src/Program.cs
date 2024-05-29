@@ -1,11 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Net.Security;
-using System.Runtime.Versioning;
+﻿using System.Runtime.Versioning;
 using System.Security.Authentication;
-using EnergySmartBridge.Modules;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 [assembly:SupportedOSPlatform("linux")]
 
@@ -20,12 +17,14 @@ class Program {
           h.ServerCertificate = Certificate.SelfSignedCertificate;
           h.SslProtocols = SslProtocols.Tls;
         });
+        listenOptions.Protocols = HttpProtocols.Http1;
       });
     });
     Settings.LoadSettings(builder.Configuration);
     var mqttModule = new MQTTModule();
     var app = builder.Build();
-    app.MapPost("/~branecky/postAll.php", mqttModule.ProcessRequest);
+    app.MapPost("/~branecky/postAll.php", mqttModule.ProcessRequest)
+        .DisableAntiforgery();
     app.Run();
   }
 }

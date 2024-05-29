@@ -1,15 +1,17 @@
 using System;
 using System.Security.Cryptography.X509Certificates;
 
-public static class Certificate {
+internal static class Certificate {
   public static readonly X509Certificate2 SelfSignedCertificate;
 
   static Certificate() {
     // A base64-encoded, pfx-format certificate and associatd private key for
-    // energysmartwaterheater.com which expires in the year 2051. This certificate is self-signed
-    // and uses an obsolete SHA-1 hash, so it should not be accepted by any sane TLS 
+    // energysmartwaterheater.com which expires in the year 2034. This certificate is self-signed
+    // and uses an obsolete SHA-1 hash, so it should not be accepted by any sane TLS
     // implementation, but fortunately this particular IOT device doesn't actually bother to check
     // the certificate chain and it in fact requires an obsolete SHA-1 hash.
+    // We hard-code this certificate because .NET can't actually create a certificate with a SHA-1
+    // hash.
     const string certBase64 = """
         MIIJ/wIBAzCCCbUGCSqGSIb3DQEHAaCCCaYEggmiMIIJnjCCBBIGCSqGSIb3DQEHBqCCBAMwggP/
         AgEAMIID+AYJKoZIhvcNAQcBMFcGCSqGSIb3DQEFDTBKMCkGCSqGSIb3DQEFDDAcBAiikRNVNnpk

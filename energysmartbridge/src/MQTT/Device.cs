@@ -1,20 +1,16 @@
 using Newtonsoft.Json;
-using EnergySmartBridge.Modules;
 
-namespace EnergySmartBridge.MQTT
+internal class Device
 {
-    public class Device
-    {
-        public string name { get; set; }
+    public string name { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string state_topic { get; set; }
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string state_topic { get; set; }
 
-        public string availability_topic { get; set; } = $"{Global.mqtt_prefix}/status";
+    public string availability_topic { get; set; } = $"{Global.mqtt_prefix}/status";
 
-        public string unique_id { get; set; }
+    public string unique_id { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public DeviceRegistry device { get; set; } = MQTTModule.MqttDeviceRegistry;
-    }
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public DeviceRegistry device { get; set; } = MQTTModule.MqttDeviceRegistry;
 }

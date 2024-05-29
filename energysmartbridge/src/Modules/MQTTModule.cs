@@ -1,5 +1,4 @@
-﻿using EnergySmartBridge.MQTT;
-using EnergySmartBridge.WebService;
+﻿using EnergySmartBridge.WebService;
 using log4net;
 using Microsoft.AspNetCore.Http;
 using MQTTnet;
@@ -14,17 +13,14 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 
-namespace EnergySmartBridge.Modules
-{
-    public class MQTTModule : IModule
+
+    internal class MQTTModule
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -176,15 +172,10 @@ namespace EnergySmartBridge.Modules
             trigger.Set();
         }
 
-        public object ProcessRequest(HttpRequest request)
+        public object ProcessRequest([AsParameters] WaterHeaterInput waterHeater)
         {
-            var query = request.Query;
-            var deviceText = query["DeviceText"];
-
-            Console.WriteLine(request.QueryString);
-            /*
-            WaterHeaterInput waterHeater = request.Query.ToObject<WaterHeaterInput>();
-
+            Console.WriteLine(waterHeater);
+    
             if(!connectedModules.ContainsKey(waterHeater.DeviceText))
             {
                 log.Debug($"Publishing water heater config {waterHeater.DeviceText}");
@@ -204,9 +195,6 @@ namespace EnergySmartBridge.Modules
             {
                 return new WaterHeaterOutput() { };
             }
-            */
-
-            return new WaterHeaterOutput() { };
         }
 
         private void PublishWaterHeater(WaterHeaterInput waterHeater)
@@ -331,4 +319,3 @@ namespace EnergySmartBridge.Modules
             return MqttClient.PublishAsync(topic, payload, MqttQualityOfServiceLevel.AtMostOnce, true);
         }
     }
-}
